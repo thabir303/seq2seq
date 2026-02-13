@@ -1,322 +1,59 @@
-# Text-to-Python Code Generation using Seq2Seq Models
 
-This project implements three different Sequence-to-Sequence (Seq2Seq) neural network architectures for generating Python code from natural language docstrings.
+# Seq2Seq Text-to-Python Code Generation
 
-## 🎯 Objective
+Implements three Seq2Seq models for generating Python code from natural language:
+1. Vanilla RNN (baseline)
+2. LSTM 
+3. LSTM with Attention
 
-Explore how different recurrent neural network architectures perform on a **text-to-code generation task**, where natural language function descriptions (docstrings) are translated into Python source code.
-
-## 📋 Models Implemented
-
-### 1. Vanilla RNN Seq2Seq (Baseline)
-- **Encoder**: Simple RNN
-- **Decoder**: Simple RNN
-- Fixed-length context vector
-- No attention mechanism
-- **Goal**: Establish baseline performance
-
-### 2. LSTM Seq2Seq
-- **Encoder**: LSTM
-- **Decoder**: LSTM
-- Fixed-length context vector
-- **Goal**: Improve long-range dependency modeling
-
-### 3. LSTM with Attention
-- **Encoder**: Bidirectional LSTM
-- **Decoder**: LSTM with Bahdanau (Additive) Attention
-- Dynamic context vector computed at each step
-- **Goal**: Remove fixed-context bottleneck, enable interpretability
-
-## 📁 Project Structure
-
-```
-seq2seq/
-├── config.py                   # Configuration and hyperparameters
-├── train.py                    # Training script
-├── evaluate.py                 # Evaluation script
-├── visualize_attention.py      # Attention visualization
-├── requirements.txt            # Dependencies
-├── data/
-│   ├── __init__.py
-│   ├── dataset.py              # Dataset loading and preprocessing
-│   └── vocabulary.py           # Vocabulary building
-├── models/
-│   ├── __init__.py
-│   ├── encoder.py              # Encoder implementations
-│   ├── decoder.py              # Decoder implementations
-│   ├── attention.py            # Bahdanau attention
-│   ├── vanilla_rnn.py          # Model 1: Vanilla RNN Seq2Seq
-│   ├── lstm_seq2seq.py         # Model 2: LSTM Seq2Seq
-│   └── lstm_attention.py       # Model 3: LSTM with Attention
-├── utils/
-│   ├── __init__.py
-│   ├── metrics.py              # Evaluation metrics
-│   ├── visualization.py        # Plotting functions
-│   └── helpers.py              # Utility functions
-├── checkpoints/                # Saved model checkpoints
-├── results/                    # Evaluation results
-└── visualizations/             # Generated plots and heatmaps
-```
-
-## 🔧 Installation
-
-### Option 1: Docker (Recommended) 🐳
-
-Run everything with a single command:
+## Setup
+## Clone Repository
 
 ```bash
-# Build and run complete pipeline
-docker-compose up
-
-# Or using docker directly
-docker build -t seq2seq:latest .
-docker run -v $(pwd)/results:/app/results \
-           -v $(pwd)/visualizations:/app/visualizations \
-           -v $(pwd)/checkpoints:/app/checkpoints \
-           seq2seq:latest
-```
-
-**That's it!** Results will be saved to `results/`, `visualizations/`, and `checkpoints/` folders.
-
-📖 **Detailed Docker Guide**: See [DOCKER_GUIDE.md](DOCKER_GUIDE.md)
-
----
-
-### Option 2: Local Installation
-
-```bash
-# Clone or navigate to the project
+git clone https://github.com/thabir303/seq2seq.git
 cd seq2seq
+```
 
-# Install dependencies
+### Install Dependencies
+```bash
 pip install -r requirements.txt
-
-# Download NLTK data (for BLEU score)
 python -c "import nltk; nltk.download('punkt')"
 ```
 
-## 📊 Dataset
-
-The project uses the **CodeSearchNet Python** dataset from Hugging Face:
-- **Source**: [Nan-Do/code-search-net-python](https://huggingface.co/datasets/Nan-Do/code-search-net-python)
-- **Size**: ~250,000+ pairs (using 10,000 for training)
-- **Content**: English docstrings paired with Python functions
-
-### Data Configuration
-| Parameter | Value |
-|-----------|-------|
-| Training examples | 10,000 |
-| Validation examples | 1,000 |
-| Test examples | 1,000 |
-| Max docstring length | 50 tokens |
-| Max code length | 80 tokens |
-
-## 🚀 Usage
-
-### Quick Start (Complete Pipeline)
-
+### Using Docker (Recommended)
 ```bash
-# Docker (Easiest)
 docker-compose up
-
-# Or Local
-python train.py --model all --epochs 15 --resume
-python evaluate.py --model all
-python visualize_attention.py --num_examples 5
-python generate_report.py
 ```
 
-### Training
+## Run
 
+### Train Models
 ```bash
-# Train all three models
-python train.py --model all --epochs 20
-
-# Train a specific model
-python train.py --model vanilla_rnn --epochs 20
-python train.py --model lstm --epochs 20
-python train.py --model lstm_attention --epochs 20
-
-# Resume from checkpoint
-python train.py --model all --epochs 20 --resume
-
-# Custom configuration
-python train.py --model all --epochs 30 --batch_size 32 --lr 0.001 --train_size 10000
-```
-
-### Evaluation
-
-```bash
-# Evaluate all models
-python evaluate.py --model all
-
-# Evaluate a specific model
-python evaluate.py --model lstm_attention
-```
-
-### Attention Visualization
-
-```bash
-# Generate attention heatmaps for 5 examples
-python visualize_attention.py --num_examples 5
-
-# Generate more examples
-python visualize_attention.py --num_examples 10
-```
-
-## 📥 Working with Google Drive (Colab)
-
-If you've trained in Colab and saved to Google Drive:
-
-```python
-# In Colab notebook
-from google.colab import drive
-drive.mount('/content/drive')
-
-# Use the helper script
-!python download_from_drive.py
-```
-
-Or manually copy:
-```bash
-cp -r /content/drive/MyDrive/seq2seq/results ./
-cp -r /content/drive/MyDrive/seq2seq/visualizations ./
-cp -r /content/drive/MyDrive/seq2seq/checkpoints ./
-```
-
-## ⚙️ Training Configuration
-
-| Hyperparameter | Value |
-|---------------|-------|
-| Embedding Dimension | 256 |
-| Hidden Dimension | 256 |
-| Number of Layers | 1 |
-| Dropout | 0.3 |
-| Batch Size | 64 |
-| Learning Rate | 0.001 |
-| Optimizer | Adam |
-| Loss Function | Cross-Entropy |
-| Teacher Forcing Ratio | 0.5 |
-| Gradient Clipping | 1.0 |
-
-## 📈 Evaluation Metrics
-
-| Metric | Description |
-|--------|-------------|
-| **Token-level Accuracy** | Percentage of correctly predicted tokens |
-| **BLEU Score** | N-gram overlap between generated and reference code |
-| **Exact Match Accuracy** | Percentage of completely correct outputs |
-| **Syntax Accuracy** | Valid Python syntax (using AST) |
-
-## 📊 Expected Results
-
-After training, you should see output similar to:
-
-| Model | BLEU Score | Token Accuracy | Exact Match |
-|-------|------------|----------------|-------------|
-| Vanilla RNN | ~0.15 | ~0.40 | ~0.02 |
-| LSTM | ~0.20 | ~0.45 | ~0.03 |
-| LSTM + Attention | ~0.25 | ~0.50 | ~0.05 |
-
-*Note: Results may vary based on training time and random initialization.*
-
-## 🔍 Attention Analysis
-
-The attention visualization shows:
-1. **Alignment heatmaps** between docstring tokens and generated code tokens
-2. **Semantic focus**: Does "maximum" attend to `max()`?
-3. **Keyword attention patterns**
-
-Example questions to analyze:
-- Does the word "maximum" attend strongly to `max()` function?
-- Do parameter names in docstring align with function parameters?
-- How does attention distribution change for longer sequences?
-
-## 📝 Deliverables
-
-### ✅ Included in Repository
-- [x] Source code for all three models
-- [x] Training script with checkpointing
-- [x] Evaluation script with metrics
-- [x] Attention visualization script
-- [x] Docker setup for easy deployment
-- [x] README with instructions
-
-### 📦 Generated After Training
-- [ ] **Trained model checkpoints** (`checkpoints/*.pt`)
-- [ ] **Evaluation results** (`results/*.json`)
-- [ ] **Visualizations** (`visualizations/*.png`)
-- [ ] **Report (PDF)** - Complete REPORT_TEMPLATE.md and convert to PDF
-
-## 📄 Creating the Final Report
-
-1. **Train and evaluate all models** (or load from Drive)
-2. **Generate visualizations**:
-   ```bash
-   python visualize_attention.py --num_examples 5
-   ```
-3. **Generate report data**:
-   ```bash
-   python generate_report.py
-   ```
-4. **Fill REPORT_TEMPLATE.md** with your analysis
-5. **Convert to PDF**:
-   ```bash
-   # Option 1: Pandoc
-   pandoc REPORT_TEMPLATE.md -o report.pdf --pdf-engine=xelatex --toc
-   
-   # Option 2: Online converter (markdowntopdf.com)
-   
-   # Option 3: VS Code extension "Markdown PDF"
-   ```
-
-## 🔄 Running the Full Pipeline
-
-### Docker (One Command)
-```bash
-# Complete pipeline
-docker-compose up
-
-# Or using shell script
-bash run_pipeline.sh
-```
-
-### Manual Steps
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Train all models (recommended: use Google Colab GPU)
-#    See seq2seq_assignment.ipynb for Colab setup
+# Train all models
 python train.py --model all --epochs 15 --resume
 
-# 3. Evaluate all models
-python evaluate.py --model all
-
-# 4. Generate attention visualizations
-python visualize_attention.py --num_examples 5
-
-# 5. Generate report summary
-python generate_report.py
-
-# 6. Complete the PDF report by editing REPORT_TEMPLATE.md
+# Train specific model
+python train.py --model lstm_attention --epochs 15
 ```
 
-## 🎓 Key Learning Outcomes
+### Evaluate
+```bash
+python evaluate.py --model all
+```
 
-1. **Vanilla RNN Limitations**: Observe performance degradation for longer docstrings
-2. **LSTM Improvements**: Better handling of long-range dependencies
-3. **Attention Benefits**: 
-   - Overcomes fixed-context bottleneck
-   - Provides interpretability through attention weights
-   - Better code generation quality
+### Generate Visualizations
+```bash
+python visualize_attention.py --num_examples 5
+```
 
-## 📚 References
+### Generate Code (Interactive)
+```bash
+python generate_code.py
+```
 
-- [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/abs/1409.3215)
-- [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473) (Bahdanau Attention)
-- [CodeSearchNet Challenge](https://github.com/github/CodeSearchNet)
+## Results
 
-## 📄 License
-
-This project is for educational purposes as part of a Machine Learning assignment.
+Results saved to:
+- `checkpoints/` - Model weights
+- `results/` - Evaluation metrics (JSON)
+- `visualizations/` - Attention heatmaps (PNG)
