@@ -176,6 +176,8 @@ Example questions to analyze:
 - [x] Evaluation script with metrics
 - [x] Attention visualization script
 - [x] README with instructions
+- [ ] **Trained model checkpoints** (generated after training)
+- [ ] **Report (PDF)** (use REPORT_TEMPLATE.md and fill after training)
 
 ## 🔄 Running the Full Pipeline
 
@@ -183,14 +185,23 @@ Example questions to analyze:
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Train all models (this will take several hours)
-python train.py --model all --epochs 20
+# 2. Train all models (recommended: use Google Colab GPU)
+#    See train_colab.ipynb for Colab setup
+python train.py --model all --epochs 15
 
 # 3. Evaluate all models
 python evaluate.py --model all
 
 # 4. Generate attention visualizations
 python visualize_attention.py --num_examples 5
+
+# 5. Generate report summary
+python generate_report.py
+
+# 6. Complete the PDF report
+#    - Open REPORT_TEMPLATE.md
+#    - Fill in [TODO] sections with results
+#    - Convert to PDF using pandoc or online tools
 ```
 
 ## 🎓 Key Learning Outcomes

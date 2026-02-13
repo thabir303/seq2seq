@@ -28,9 +28,9 @@ os.makedirs(VISUALIZATION_DIR, exist_ok=True)
 # Dataset Configuration
 # ============================================
 DATASET_NAME = "Nan-Do/code-search-net-python"
-TRAIN_SIZE = 10000  # Use 5,000-10,000 training examples
-VAL_SIZE = 1000
-TEST_SIZE = 1000
+TRAIN_SIZE = 8000   # Good size for GPU training
+VAL_SIZE = 800
+TEST_SIZE = 800
 
 # ============================================
 # Tokenization Configuration
@@ -50,19 +50,19 @@ EOS_IDX = 2
 UNK_IDX = 3
 
 # ============================================
-# Model Configuration
+# Model Configuration  
 # ============================================
-EMBEDDING_DIM = 256        # Embedding dimension (128-256 as per assignment)
-HIDDEN_DIM = 256           # Hidden dimension (256 as per assignment)
+EMBEDDING_DIM = 256        # Standard size for good accuracy
+HIDDEN_DIM = 256           # Standard size for good accuracy
 NUM_LAYERS = 1             # Number of RNN/LSTM layers
 DROPOUT = 0.3              # Dropout rate
 
 # ============================================
 # Training Configuration
 # ============================================
-BATCH_SIZE = 64
+BATCH_SIZE = 64             # Good for GPU memory
 LEARNING_RATE = 0.001
-NUM_EPOCHS = 20
+NUM_EPOCHS = 15             # 15 epochs for Colab GPU
 TEACHER_FORCING_RATIO = 0.5  # Probability of using teacher forcing
 CLIP_GRAD = 1.0             # Gradient clipping value
 
