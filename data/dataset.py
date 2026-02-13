@@ -191,8 +191,8 @@ def load_codesearchnet_data(split: str = 'train',
 
 
 def build_vocabularies(train_data: List[Dict],
-                       min_freq: int = 5,
-                       max_vocab_size: int = 10000) -> Tuple[Vocabulary, Vocabulary]:
+                       min_freq: int = 2,
+                       max_vocab_size: int = 20000) -> Tuple[Vocabulary, Vocabulary]:
     """
     Build source and target vocabularies from training data.
     
