@@ -18,6 +18,8 @@ checkpoints/*.pkl
 *.pt
 *.pth
 *.pkl
+*.md
+!README.md
 
 # Data files
 data/*.json

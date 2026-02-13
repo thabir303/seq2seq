@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  seq2seq:
+    build: .
+    image: seq2seq:latest
+    container_name: seq2seq-training
+    volumes:
+      # Mount results and visualizations to host
+      - ./checkpoints:/app/checkpoints
+      - ./results:/app/results
+      - ./visualizations:/app/visualizations
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Add CUDA support if GPU available
+      # - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    restart: "no"
+    
+  # Service for quick evaluation only
+  evaluate:
+    build: .
+    image: seq2seq:latest
+    container_name: seq2seq-evaluate
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./results:/app/results
+      - ./visualizations:/app/visualizations
+    command: >
+      sh -c "
+      python evaluate.py --model all &&
+      python visualize_attention.py --num_examples 5 &&
+      python generate_report.py
+      "
+    profiles:
+      - evaluate
+
+  # Service for training only
+  train:
+    build: .
+    image: seq2seq:latest
+    container_name: seq2seq-train
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./results:/app/results
+    command: python train.py --model all --epochs 15 --resume
+    profiles:
+      - train

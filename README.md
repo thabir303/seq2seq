@@ -60,6 +60,30 @@ seq2seq/
 
 ## 🔧 Installation
 
+### Option 1: Docker (Recommended) 🐳
+
+Run everything with a single command:
+
+```bash
+# Build and run complete pipeline
+docker-compose up
+
+# Or using docker directly
+docker build -t seq2seq:latest .
+docker run -v $(pwd)/results:/app/results \
+           -v $(pwd)/visualizations:/app/visualizations \
+           -v $(pwd)/checkpoints:/app/checkpoints \
+           seq2seq:latest
+```
+
+**That's it!** Results will be saved to `results/`, `visualizations/`, and `checkpoints/` folders.
+
+📖 **Detailed Docker Guide**: See [DOCKER_GUIDE.md](DOCKER_GUIDE.md)
+
+---
+
+### Option 2: Local Installation
+
 ```bash
 # Clone or navigate to the project
 cd seq2seq
@@ -89,6 +113,19 @@ The project uses the **CodeSearchNet Python** dataset from Hugging Face:
 
 ## 🚀 Usage
 
+### Quick Start (Complete Pipeline)
+
+```bash
+# Docker (Easiest)
+docker-compose up
+
+# Or Local
+python train.py --model all --epochs 15 --resume
+python evaluate.py --model all
+python visualize_attention.py --num_examples 5
+python generate_report.py
+```
+
 ### Training
 
 ```bash
@@ -99,6 +136,9 @@ python train.py --model all --epochs 20
 python train.py --model vanilla_rnn --epochs 20
 python train.py --model lstm --epochs 20
 python train.py --model lstm_attention --epochs 20
+
+# Resume from checkpoint
+python train.py --model all --epochs 20 --resume
 
 # Custom configuration
 python train.py --model all --epochs 30 --batch_size 32 --lr 0.001 --train_size 10000
@@ -119,6 +159,29 @@ python evaluate.py --model lstm_attention
 ```bash
 # Generate attention heatmaps for 5 examples
 python visualize_attention.py --num_examples 5
+
+# Generate more examples
+python visualize_attention.py --num_examples 10
+```
+
+## 📥 Working with Google Drive (Colab)
+
+If you've trained in Colab and saved to Google Drive:
+
+```python
+# In Colab notebook
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Use the helper script
+!python download_from_drive.py
+```
+
+Or manually copy:
+```bash
+cp -r /content/drive/MyDrive/seq2seq/results ./
+cp -r /content/drive/MyDrive/seq2seq/visualizations ./
+cp -r /content/drive/MyDrive/seq2seq/checkpoints ./
 ```
 
 ## ⚙️ Training Configuration
@@ -171,23 +234,61 @@ Example questions to analyze:
 
 ## 📝 Deliverables
 
+### ✅ Included in Repository
 - [x] Source code for all three models
 - [x] Training script with checkpointing
 - [x] Evaluation script with metrics
 - [x] Attention visualization script
+- [x] Docker setup for easy deployment
 - [x] README with instructions
-- [ ] **Trained model checkpoints** (generated after training)
-- [ ] **Report (PDF)** (use REPORT_TEMPLATE.md and fill after training)
+
+### 📦 Generated After Training
+- [ ] **Trained model checkpoints** (`checkpoints/*.pt`)
+- [ ] **Evaluation results** (`results/*.json`)
+- [ ] **Visualizations** (`visualizations/*.png`)
+- [ ] **Report (PDF)** - Complete REPORT_TEMPLATE.md and convert to PDF
+
+## 📄 Creating the Final Report
+
+1. **Train and evaluate all models** (or load from Drive)
+2. **Generate visualizations**:
+   ```bash
+   python visualize_attention.py --num_examples 5
+   ```
+3. **Generate report data**:
+   ```bash
+   python generate_report.py
+   ```
+4. **Fill REPORT_TEMPLATE.md** with your analysis
+5. **Convert to PDF**:
+   ```bash
+   # Option 1: Pandoc
+   pandoc REPORT_TEMPLATE.md -o report.pdf --pdf-engine=xelatex --toc
+   
+   # Option 2: Online converter (markdowntopdf.com)
+   
+   # Option 3: VS Code extension "Markdown PDF"
+   ```
 
 ## 🔄 Running the Full Pipeline
 
+### Docker (One Command)
+```bash
+# Complete pipeline
+docker-compose up
+
+# Or using shell script
+bash run_pipeline.sh
+```
+
+### Manual Steps
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
 # 2. Train all models (recommended: use Google Colab GPU)
-#    See train_colab.ipynb for Colab setup
-python train.py --model all --epochs 15
+#    See seq2seq_assignment.ipynb for Colab setup
+python train.py --model all --epochs 15 --resume
 
 # 3. Evaluate all models
 python evaluate.py --model all
@@ -198,10 +299,7 @@ python visualize_attention.py --num_examples 5
 # 5. Generate report summary
 python generate_report.py
 
-# 6. Complete the PDF report
-#    - Open REPORT_TEMPLATE.md
-#    - Fill in [TODO] sections with results
-#    - Convert to PDF using pandoc or online tools
+# 6. Complete the PDF report by editing REPORT_TEMPLATE.md
 ```
 
 ## 🎓 Key Learning Outcomes
