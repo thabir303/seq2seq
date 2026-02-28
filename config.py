@@ -28,9 +28,9 @@ os.makedirs(VISUALIZATION_DIR, exist_ok=True)
 # Dataset Configuration
 # ============================================
 DATASET_NAME = "Nan-Do/code-search-net-python"
-TRAIN_SIZE = 20000   # More data = better generalization
-VAL_SIZE = 2000
-TEST_SIZE = 1000
+TRAIN_SIZE = 12000   # Balanced: good accuracy without too long training
+VAL_SIZE = 1200
+TEST_SIZE = 800
 
 # ============================================
 # Tokenization Configuration
