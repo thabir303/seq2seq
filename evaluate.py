@@ -261,16 +261,37 @@ def main():
     print("="*60)
     print(f"Device: {DEVICE}")
     
-    # Load data (we only need test set)
+    # ── Load SAVED vocabularies (must match training) ────────
+    src_vocab_path = os.path.join(CHECKPOINT_DIR, 'src_vocab.pkl')
+    tgt_vocab_path = os.path.join(CHECKPOINT_DIR, 'tgt_vocab.pkl')
+    
+    if os.path.exists(src_vocab_path) and os.path.exists(tgt_vocab_path):
+        print("\nLoading saved vocabularies from checkpoints...")
+        src_vocab = Vocabulary.load(src_vocab_path)
+        tgt_vocab = Vocabulary.load(tgt_vocab_path)
+    else:
+        print("\n⚠️ Saved vocabularies not found! Building new ones (may cause mismatch)...")
+        # Fallback: build from scratch (not recommended)
+        from data.dataset import build_vocabularies, load_codesearchnet_data
+        train_data = load_codesearchnet_data('train', TRAIN_SIZE)
+        src_vocab, tgt_vocab = build_vocabularies(train_data)
+    
+    # Load test data and create test loader with the SAVED vocabulary
     print("\nLoading test data...")
-    train_loader, val_loader, test_loader, src_vocab, tgt_vocab = get_dataloaders(
+    from data.dataset import load_codesearchnet_data, CodeSearchNetDataset, collate_fn
+    from torch.utils.data import DataLoader
+    
+    test_data = load_codesearchnet_data('test', TEST_SIZE)
+    test_dataset = CodeSearchNetDataset(test_data, src_vocab, tgt_vocab)
+    test_loader = DataLoader(
+        test_dataset,
         batch_size=args.batch_size,
-        train_size=TRAIN_SIZE,
-        val_size=VAL_SIZE,
-        test_size=TEST_SIZE
+        shuffle=False,
+        collate_fn=collate_fn,
+        num_workers=0
     )
     
-    print(f"Test set size: {len(test_loader.dataset)}")
+    print(f"Test set size: {len(test_dataset)}")
     print(f"Source vocabulary size: {len(src_vocab)}")
     print(f"Target vocabulary size: {len(tgt_vocab)}")
     
