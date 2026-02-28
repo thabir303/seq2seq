@@ -203,7 +203,8 @@ class Vocabulary:
 
 def tokenize(text: str) -> List[str]:
     """
-    Simple whitespace tokenizer.
+    Improved tokenizer for docstrings.
+    Lowercases and splits on whitespace + punctuation boundaries.
     
     Args:
         text: Input text string
@@ -211,16 +212,17 @@ def tokenize(text: str) -> List[str]:
     Returns:
         List of tokens
     """
-    # Basic whitespace tokenization
-    # Also handles some common Python code patterns
-    tokens = text.strip().split()
+    import re
+    text = text.strip().lower()
+    # Split on whitespace and keep punctuation as separate tokens
+    tokens = re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[^\s]", text)
     return tokens
 
 
 def tokenize_code(code: str) -> List[str]:
     """
-    Tokenize Python code.
-    Preserves important code structure elements.
+    Improved Python code tokenizer.
+    Preserves code structure and splits operators/punctuation into separate tokens.
     
     Args:
         code: Python code string
@@ -228,14 +230,27 @@ def tokenize_code(code: str) -> List[str]:
     Returns:
         List of code tokens
     """
-    # Replace newlines with special token for structure preservation
+    import re
+    
+    # Normalize whitespace: replace newlines and tabs with special tokens
     code = code.replace('\n', ' <NEWLINE> ')
     code = code.replace('\t', ' <INDENT> ')
+    code = code.replace('    ', ' <INDENT> ')  # 4-space indent
     
-    # Split on whitespace
-    tokens = code.strip().split()
+    # Split into meaningful tokens: identifiers, numbers, strings, operators
+    tokens = re.findall(
+        r'<NEWLINE>|<INDENT>'           # special tokens
+        r'|\"\"\".*?\"\"\"|\'\'\'.*?\'\'\''  # triple-quoted strings
+        r'|"[^"]*"|\'[^\']*\''          # single/double-quoted strings
+        r'|[a-zA-Z_][a-zA-Z0-9_]*'     # identifiers
+        r'|[0-9]+\.?[0-9]*'            # numbers
+        r'|==|!=|<=|>=|<<|>>|\*\*'     # multi-char operators
+        r'|\+=|-=|\*=|/=|//=|%='       # augmented assignment
+        r'|[^\s]',                      # any other single char
+        code
+    )
     
     # Filter empty tokens
-    tokens = [t for t in tokens if t]
+    tokens = [t for t in tokens if t.strip()]
     
     return tokens

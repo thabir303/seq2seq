@@ -28,15 +28,15 @@ os.makedirs(VISUALIZATION_DIR, exist_ok=True)
 # Dataset Configuration
 # ============================================
 DATASET_NAME = "Nan-Do/code-search-net-python"
-TRAIN_SIZE = 8000   # Good size for GPU training
-VAL_SIZE = 800
-TEST_SIZE = 800
+TRAIN_SIZE = 20000   # More data = better generalization
+VAL_SIZE = 2000
+TEST_SIZE = 1000
 
 # ============================================
 # Tokenization Configuration
 # ============================================
-MAX_DOCSTRING_LENGTH = 50  # Maximum docstring tokens
-MAX_CODE_LENGTH = 80       # Maximum code tokens
+MAX_DOCSTRING_LENGTH = 60  # Slightly longer docstrings
+MAX_CODE_LENGTH = 120      # More room for code output
 
 # Special tokens
 PAD_TOKEN = '<PAD>'
@@ -53,8 +53,8 @@ UNK_IDX = 3
 # Model Configuration  
 # ============================================
 EMBEDDING_DIM = 256        # Standard size for good accuracy
-HIDDEN_DIM = 256           # Standard size for good accuracy
-NUM_LAYERS = 1             # Number of RNN/LSTM layers
+HIDDEN_DIM = 512           # Larger hidden dim for better representation
+NUM_LAYERS = 2             # 2 layers for deeper learning
 DROPOUT = 0.3              # Dropout rate
 
 # ============================================
@@ -62,8 +62,8 @@ DROPOUT = 0.3              # Dropout rate
 # ============================================
 BATCH_SIZE = 64             # Good for GPU memory
 LEARNING_RATE = 0.001
-NUM_EPOCHS = 15             # 15 epochs for Colab GPU
-TEACHER_FORCING_RATIO = 0.5  # Probability of using teacher forcing
+NUM_EPOCHS = 25             # More epochs for better convergence
+TEACHER_FORCING_RATIO = 0.75  # Higher TF ratio helps learn faster
 CLIP_GRAD = 1.0             # Gradient clipping value
 
 # ============================================

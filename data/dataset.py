@@ -191,15 +191,15 @@ def load_codesearchnet_data(split: str = 'train',
 
 
 def build_vocabularies(train_data: List[Dict],
-                       min_freq: int = 2,
-                       max_vocab_size: int = 20000) -> Tuple[Vocabulary, Vocabulary]:
+                       min_freq: int = 1,
+                       max_vocab_size: int = 30000) -> Tuple[Vocabulary, Vocabulary]:
     """
     Build source and target vocabularies from training data.
     
     Args:
         train_data: Training data examples
-        min_freq: Minimum token frequency (increased to filter rare tokens)
-        max_vocab_size: Maximum vocabulary size to prevent too large vocab
+        min_freq: Minimum token frequency (1 = keep all tokens for less UNK)
+        max_vocab_size: Maximum vocabulary size
         
     Returns:
         Tuple of (source_vocab, target_vocab)

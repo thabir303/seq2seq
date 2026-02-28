@@ -34,8 +34,7 @@ from config import (
     MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION,
     TRAIN_SIZE, VAL_SIZE, TEST_SIZE, BATCH_SIZE
 )
-from data import get_dataloaders
-from models import VanillaRNNSeq2Seq, LSTMSeq2Seq, LSTMAttentionSeq2Seq
+from data import get_dataloaders 
 from models.vanilla_rnn import create_vanilla_rnn_model
 from models.lstm_seq2seq import create_lstm_model
 from models.lstm_attention import create_attention_model
@@ -185,6 +184,11 @@ def train_model(model: nn.Module,
     # Optimizer
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     
+    # Learning rate scheduler: reduce LR when val loss plateaus
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=3, verbose=True
+    )
+    
     # Logger
     logger = TrainingLogger(model_name)
     
@@ -236,6 +240,9 @@ def train_model(model: nn.Module,
         
         logger.log_epoch(epoch, train_loss, val_loss)
         
+        # Step the learning rate scheduler
+        scheduler.step(val_loss)
+        
         # Check if best model
         is_best = val_loss < best_val_loss
         if is_best:
@@ -258,14 +265,17 @@ def train_model(model: nn.Module,
     # Save training logs
     logger.save_logs()
     
-    # Plot loss curves
+    # Plot loss curves (only if there are losses to plot)
     from config import VISUALIZATION_DIR
-    plot_loss_curves(
-        logger.train_losses,
-        logger.val_losses,
-        model_name,
-        save_path=os.path.join(VISUALIZATION_DIR, f'{model_name}_loss_curves.png')
-    )
+    if logger.train_losses and logger.val_losses:
+        plot_loss_curves(
+            logger.train_losses,
+            logger.val_losses,
+            model_name,
+            save_path=os.path.join(VISUALIZATION_DIR, f'{model_name}_loss_curves.png')
+        )
+    else:
+        print(f"No new training epochs — skipping loss curve plot for {model_name}.")
     
     return model, {
         'train_losses': logger.train_losses,
