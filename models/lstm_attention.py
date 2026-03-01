@@ -14,7 +14,7 @@ Goal:
     - Improve code generation quality
     - Enable interpretability through attention visualization
 """
-
+                                                            
 import torch
 import torch.nn as nn
 import random

@@ -70,8 +70,8 @@ def plot_all_models_loss(all_losses: Dict[str, Dict[str, List[float]]],
     """
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     
-    colors = {'vanilla_rnn': 'blue', 'lstm': 'green', 'lstm_attention': 'red'}
-    labels = {'vanilla_rnn': 'Vanilla RNN', 'lstm': 'LSTM', 'lstm_attention': 'LSTM + Attention'}
+    colors = {'vanilla_rnn': 'blue', 'lstm': 'green', 'lstm_attention': 'red', 'transformer': 'purple'}
+    labels = {'vanilla_rnn': 'Vanilla RNN', 'lstm': 'LSTM', 'lstm_attention': 'LSTM + Attention', 'transformer': 'Transformer'}
     
     # Training Loss
     ax1 = axes[0]
@@ -255,7 +255,7 @@ def plot_metrics_comparison(metrics: Dict[str, Dict[str, float]],
     width = 0.8 / n_models
     
     colors = ['#3498db', '#2ecc71', '#e74c3c', '#9b59b6']
-    labels = {'vanilla_rnn': 'Vanilla RNN', 'lstm': 'LSTM', 'lstm_attention': 'LSTM + Attention'}
+    labels = {'vanilla_rnn': 'Vanilla RNN', 'lstm': 'LSTM', 'lstm_attention': 'LSTM + Attention', 'transformer': 'Transformer'}
     
     for i, model in enumerate(models):
         values = [metrics[model][m] for m in metric_names]

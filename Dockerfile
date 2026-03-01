@@ -10,14 +10,23 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git \
     wget \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first (for layer caching)
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt && \
-    python -m nltk.downloader punkt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Download NLTK punkt data manually for faster and more reliable installation
+RUN mkdir -p /root/nltk_data/tokenizers && \
+    wget -q -O /root/nltk_data/tokenizers/punkt.zip https://github.com/nltk/nltk_data/raw/gh-pages/packages/tokenizers/punkt.zip && \
+    unzip -q /root/nltk_data/tokenizers/punkt.zip -d /root/nltk_data/tokenizers/ && \
+    rm /root/nltk_data/tokenizers/punkt.zip
+
+# Set NLTK data path
+ENV NLTK_DATA=/root/nltk_data
 
 # Copy project files
 COPY . .

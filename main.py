@@ -100,7 +100,7 @@ Examples:
     # Train command
     train_parser = subparsers.add_parser('train', help='Train models')
     train_parser.add_argument('--model', type=str, default='all',
-                              choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'all'])
+                              choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'transformer', 'all'])
     train_parser.add_argument('--epochs', type=int, default=20)
     train_parser.add_argument('--batch_size', type=int, default=None)
     train_parser.add_argument('--lr', type=float, default=None)
@@ -109,7 +109,7 @@ Examples:
     # Evaluate command
     eval_parser = subparsers.add_parser('evaluate', help='Evaluate models')
     eval_parser.add_argument('--model', type=str, default='all',
-                             choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'all'])
+                             choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'transformer', 'all'])
     eval_parser.add_argument('--batch_size', type=int, default=None)
     
     # Visualize command

@@ -28,13 +28,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from config import (
     DEVICE, PAD_IDX, SOS_IDX, EOS_IDX,
     CHECKPOINT_DIR, RESULTS_DIR, VISUALIZATION_DIR,
-    MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION,
+    MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION, MODEL_TRANSFORMER,
     TRAIN_SIZE, VAL_SIZE, TEST_SIZE, BATCH_SIZE, MAX_CODE_LENGTH
 )
 from data import get_dataloaders, Vocabulary
 from models.vanilla_rnn import create_vanilla_rnn_model
 from models.lstm_seq2seq import create_lstm_model
 from models.lstm_attention import create_attention_model
+from models.transformer_seq2seq import create_transformer_model
 from utils.metrics import (
     calculate_bleu, calculate_accuracy, calculate_exact_match,
     calculate_syntax_accuracy, analyze_errors, calculate_metrics_by_length
@@ -226,6 +227,8 @@ def load_model_for_evaluation(model_type: str,
         model = create_lstm_model(src_vocab_size, tgt_vocab_size, device)
     elif model_type == MODEL_LSTM_ATTENTION:
         model = create_attention_model(src_vocab_size, tgt_vocab_size, device)
+    elif model_type == MODEL_TRANSFORMER:
+        model = create_transformer_model(src_vocab_size, tgt_vocab_size, device)
     else:
         raise ValueError(f"Unknown model type: {model_type}")
     
@@ -249,7 +252,7 @@ def main():
     """Main evaluation function."""
     parser = argparse.ArgumentParser(description='Evaluate Seq2Seq models')
     parser.add_argument('--model', type=str, default='all',
-                        choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'all'],
+                        choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'transformer', 'all'],
                         help='Model to evaluate (default: all)')
     parser.add_argument('--batch_size', type=int, default=BATCH_SIZE,
                         help=f'Batch size (default: {BATCH_SIZE})')
@@ -297,7 +300,7 @@ def main():
     
     # Determine which models to evaluate
     if args.model == 'all':
-        models_to_evaluate = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION]
+        models_to_evaluate = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION, MODEL_TRANSFORMER]
     else:
         models_to_evaluate = [args.model]
     

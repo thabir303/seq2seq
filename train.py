@@ -31,13 +31,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from config import (
     DEVICE, NUM_EPOCHS, LEARNING_RATE, CLIP_GRAD,
     TEACHER_FORCING_RATIO, PAD_IDX, LOG_INTERVAL,
-    MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION,
+    MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION, MODEL_TRANSFORMER,
     TRAIN_SIZE, VAL_SIZE, TEST_SIZE, BATCH_SIZE
 )
 from data import get_dataloaders 
 from models.vanilla_rnn import create_vanilla_rnn_model
 from models.lstm_seq2seq import create_lstm_model
 from models.lstm_attention import create_attention_model
+from models.transformer_seq2seq import create_transformer_model
 from utils.helpers import save_checkpoint, load_checkpoint, TrainingLogger, format_time
 from utils.visualization import plot_loss_curves
 
@@ -79,6 +80,8 @@ def train_epoch(model: nn.Module,
         # Forward pass
         if model.model_name == 'lstm_attention':
             output, _ = model(src, tgt, src_lengths, teacher_forcing_ratio)
+        elif model.model_name == 'transformer':
+            output = model(src, tgt, src_lengths, teacher_forcing_ratio)
         else:
             output = model(src, tgt, src_lengths, teacher_forcing_ratio)
         
@@ -97,7 +100,7 @@ def train_epoch(model: nn.Module,
         # Backward pass
         loss.backward()
         
-        # Gradient clipping
+        # Gradient clipping - to avoid exploding gradient
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
         
         # Update weights
@@ -136,6 +139,8 @@ def evaluate(model: nn.Module,
             # Forward pass (no teacher forcing during evaluation)
             if model.model_name == 'lstm_attention':
                 output, _ = model(src, tgt, src_lengths, teacher_forcing_ratio=0.0)
+            elif model.model_name == 'transformer':
+                output = model(src, tgt, src_lengths, teacher_forcing_ratio=0.0)
             else:
                 output = model(src, tgt, src_lengths, teacher_forcing_ratio=0.0)
             
@@ -306,6 +311,8 @@ def create_model(model_type: str,
         return create_lstm_model(src_vocab_size, tgt_vocab_size, device)
     elif model_type == MODEL_LSTM_ATTENTION:
         return create_attention_model(src_vocab_size, tgt_vocab_size, device)
+    elif model_type == MODEL_TRANSFORMER:
+        return create_transformer_model(src_vocab_size, tgt_vocab_size, device)
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
@@ -314,7 +321,7 @@ def main():
     """Main training function."""
     parser = argparse.ArgumentParser(description='Train Seq2Seq models')
     parser.add_argument('--model', type=str, default='all',
-                        choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'all'],
+                        choices=['vanilla_rnn', 'lstm', 'lstm_attention', 'transformer', 'all'],
                         help='Model to train (default: all)')
     parser.add_argument('--epochs', type=int, default=NUM_EPOCHS,
                         help=f'Number of epochs (default: {NUM_EPOCHS})')
@@ -358,7 +365,7 @@ def main():
     
     # Determine which models to train
     if args.model == 'all':
-        models_to_train = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION]
+        models_to_train = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION, MODEL_TRANSFORMER]
     else:
         models_to_train = [args.model]
     

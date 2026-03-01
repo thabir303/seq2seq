@@ -38,13 +38,13 @@ TEST_SIZE = 800
 MAX_DOCSTRING_LENGTH = 60  # Slightly longer docstrings
 MAX_CODE_LENGTH = 120      # More room for code output
 
-# Special tokens
+# Special tokens for sequence management
 PAD_TOKEN = '<PAD>'
 SOS_TOKEN = '<SOS>'
 EOS_TOKEN = '<EOS>'
 UNK_TOKEN = '<UNK>'
 
-PAD_IDX = 0
+PAD_IDX = 0 # for make diff length sequence as same length
 SOS_IDX = 1
 EOS_IDX = 2
 UNK_IDX = 3
@@ -72,8 +72,9 @@ CLIP_GRAD = 1.0             # Gradient clipping value
 MODEL_VANILLA_RNN = 'vanilla_rnn'
 MODEL_LSTM = 'lstm'
 MODEL_LSTM_ATTENTION = 'lstm_attention'
+MODEL_TRANSFORMER = 'transformer'
 
-ALL_MODELS = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION]
+ALL_MODELS = [MODEL_VANILLA_RNN, MODEL_LSTM, MODEL_LSTM_ATTENTION, MODEL_TRANSFORMER]
 
 # ============================================
 # Logging Configuration

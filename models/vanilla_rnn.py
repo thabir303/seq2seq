@@ -122,7 +122,7 @@ class VanillaRNNSeq2Seq(nn.Module):
             # Decoder forward step
             output, hidden = self.decoder(decoder_input, hidden)
             
-            # Store output
+            # Store output (prediction)
             outputs[:, t, :] = output
             
             # Decide whether to use teacher forcing
